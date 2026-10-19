@@ -51,7 +51,7 @@ local MyEntity = Spawner:Create({
         Type = "Guiding", -- "Curious"
         Hints = {"You died to Barrage.", "The entity will create 4 other clones of itself that'll attack one by one.", "Do not leave your hiding spot too early or hide for too long.", "Good luck !"},
         Cause = "Barrage",
-        MessageDelay = 0.9
+        MessageDelay = 0
     }
 })
 
