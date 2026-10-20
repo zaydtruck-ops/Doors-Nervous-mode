@@ -1,0 +1,255 @@
+local CustomAchievements = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/DOORS-Custom-Achievements/main/init.luau"))()
+
+task.spawn(function()
+
+    task.spawn(function()
+        local sound = Instance.new("Sound")
+        local distortionSF = Instance.new("DistortionSoundEffect")
+
+        distortionSF.Parent = sound
+        distortionSF.Level = 1
+        
+        sound.Volume = 20
+        sound.SoundId = "rbxassetid://139793062812354"
+        sound.Parent = game.SoundService
+        sound.PlaybackSpeed = 0.7
+        sound:Play()
+
+        task.wait(1.2)
+        sound:Destroy()
+    end)
+
+    local RunService = game:GetService("RunService")
+    local RED = Color3.fromRGB(0, 0, 200)
+    local NEON_RED = Color3.fromRGB(0, 0, 255)
+    local FADE_IN_TIME = 2
+    local FADE_OUT_TIME = 60
+    -- Stop the previous effect if it exists.
+    local previousStop = getgenv().LightFixtureColorEffectStop
+    if previousStop then
+        previousStop()
+    end
+    local stopped = false
+    local objects = {}
+    local function StopEffect()
+        stopped = true
+    end
+
+    local CameraShaker = require(game.ReplicatedStorage.CameraShaker)
+    local camara = game.Workspace.CurrentCamera
+    local camShake = CameraShaker.new(Enum.RenderPriority.Camera.Value, function(shakeCf)
+    camara.CFrame = camara.CFrame * shakeCf
+    end)
+    camShake:Start()
+    camShake:ShakeOnce(20, 7, 0.1, 2, 3.5, 0.5)
+
+    getgenv().LightFixtureColorEffectStop = StopEffect
+    -- Track supported objects inside LightFixture models.
+    local function TrackObject(object)
+        if objects[object] then
+            return
+        end
+        local fixture = object:FindFirstAncestor("LightFixture")
+        if not fixture then
+            return
+        end
+        local targetColor
+        if object:IsA("PointLight")
+            or object:IsA("SpotLight")
+            or object:IsA("SurfaceLight") then
+            targetColor = RED
+        elseif object:IsA("BasePart")
+            and object.Name == "Neon" then
+            targetColor = NEON_RED
+        end
+        if not targetColor then
+            return
+        end
+        objects[object] = {
+            OriginalColor = object.Color,
+            TargetColor = targetColor
+        }
+    end
+    -- Find existing fixtures.
+    for _, object in ipairs(game:GetDescendants()) do
+        TrackObject(object)
+    end
+    -- Detect new fixtures and objects added later.
+    local descendantConnection = game.DescendantAdded:Connect(function(object)
+        TrackObject(object)
+        if object.Name == "LightFixture" then
+            for _, child in ipairs(object:GetDescendants()) do
+                TrackObject(child)
+            end
+        end
+    end)
+    local startTime = os.clock()
+    while not stopped do
+        local elapsed = os.clock() - startTime
+        local alpha
+        local fadingOut = false
+        if elapsed < FADE_IN_TIME then
+            alpha = math.clamp(elapsed / FADE_IN_TIME, 0, 1)
+        else
+            fadingOut = true
+            alpha = math.clamp(
+                (elapsed - FADE_IN_TIME) / FADE_OUT_TIME,
+                0,
+                1
+            )
+        end
+        for object, data in pairs(objects) do
+            if object.Parent then
+                if fadingOut then
+                    object.Color = data.TargetColor:Lerp(
+                        data.OriginalColor,
+                        alpha
+                    )
+                else
+                    object.Color = data.OriginalColor:Lerp(
+                        data.TargetColor,
+                        alpha
+                    )
+                end
+            else
+                objects[object] = nil
+            end
+        end
+        if fadingOut and alpha >= 1 then
+            break
+        end
+        RunService.Heartbeat:Wait()
+    end
+    descendantConnection:Disconnect()
+    -- Only clear the stop function if this is still the active effect.
+    if getgenv().LightFixtureColorEffectStop == StopEffect then
+        getgenv().LightFixtureColorEffectStop = nil
+    end
+    -- Restore original colors if the effect ended naturally.
+    if not stopped then
+        for object, data in pairs(objects) do
+            if object.Parent then
+                object.Color = data.OriginalColor
+            end
+        end
+    end
+end)
+
+local Spawner = loadstring(game:HttpGet("https://raw.githubusercontent.com/zaydtruck-ops/Vynixu-entity-spawner-modified-with-death-message-delay/refs/heads/main/Spawner"))()
+
+local MyEntity = Spawner:Create({
+    Entity = {
+        Name = "Corrupt",
+        Asset = "https://github.com/zaydtruck-ops/CorruptEntityModelDoorsNervousMode/raw/refs/heads/main/CorruptV3THISONE.rbxm", --ENTITY MODEL
+        HeightOffset = 2
+    },
+    Movement = {
+        Speed = 260,
+        Delay = 2,
+        Reversed = false
+    },
+    Damage = {
+        Enabled = true,
+		IgnoreHiding = false,
+        Range = 40,
+        Amount = 200
+    },
+    Rebounding = {
+        Enabled = true,
+        Type = "Ambush", -- "Blitz"
+        Min = 2,
+        Max = 4,
+        Delay = 0
+    },
+    Lights = {
+        Flicker = {
+            Enabled = false,
+            Duration = 4
+        },
+        Shatter = false,
+        Repair = false
+    },
+    Earthquake = {
+        Enabled = false
+    },
+    CameraShake = {
+        Enabled = true,
+        Values = {5, 20, 0.5, 2}, -- Magnitude, Roughness, FadeIn, FadeOut
+        Range = 150
+    },
+    Crucifixion = {
+        Type = "Guiding", -- "Guiding"
+        Enabled = true,
+        Range = 40,
+        Resist = false,
+        Break = false
+    },
+    Death = {
+        Type = "Guiding", -- "Curious"
+        Hints = {"You died to Corrupt.", "It will rebound two or four times.", "And it will shake the screen and turn the lights blue to signal it's arrival.", "Use what you've learned from Ambush !"},
+        Cause = "Corrupt",
+        MessageDelay = 0.6
+    }
+})
+
+MyEntity:SetCallback("OnSpawned", function()
+    print("Entity has spawned")
+end)
+
+MyEntity:SetCallback("OnStartMoving", function()
+    print("Entity has started moving")
+end)
+
+MyEntity:SetCallback("OnEnterRoom", function(room: Model, firstTime: boolean)
+    if firstTime == true then
+        print("Entity has entered room: ".. room.Name.. " for the first time")
+    else
+        print("Entity has entered room: ".. room.Name.. " again")
+    end
+end)
+
+MyEntity:SetCallback("OnLookAt", function(lineOfSight: boolean)
+	if lineOfSight == true then
+		print("Player is looking at entity")
+	else
+		print("Player view is obstructed by something")
+	end
+end)
+
+MyEntity:SetCallback("OnRebounding", function(startOfRebound: boolean)
+    if startOfRebound == true then
+      print("Entity has started rebounding")
+	else
+      print("Entity has finished rebounding")
+	end
+end)
+
+MyEntity:SetCallback("OnDespawning", function()
+    print("Entity is despawning")
+end)
+
+MyEntity:SetCallback("OnDespawned", function()
+    print("Entity has despawned")
+    CustomAchievements:Grant({
+        Identifier = "Corrupt",
+        Title = "Corrupt nature",
+        Desc = "That guy's really crooked...",
+        Reason = "Survive Corrupt.",
+        Image = "rbxassetid://116564118275282"
+    }, {
+        CheckOwned = false,
+        Remember = false
+    })
+end)
+
+MyEntity:SetCallback("OnDamagePlayer", function(newHealth: number)
+	if newHealth <= 0 then
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/zaydtruck-ops/Doors-Nervous-mode/refs/heads/main/CorruptJumpscare"))()
+		print("Entity has killed the player")
+	else
+		print("Entity has damaged the player")
+	end
+end)
+
+--SPAWN ENTITY
+MyEntity:Run(true)
