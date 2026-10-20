@@ -1,4 +1,4 @@
-local jumpscare = game:GetObjects("rbxassetid://110003150631170")[1]
+local jumpscare = game:GetObjects("rbxassetid://109064363360326")[1]
 local player = game.Players.LocalPlayer
 
 jumpscare.Parent = player.PlayerGui.MainUI
