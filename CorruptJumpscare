@@ -49,7 +49,7 @@ local tween5 = TweenService:Create(jumpscare.StormImage, TweenInfo.new(0.6), {Po
 local tween6 = TweenService:Create(jumpscare.StormImage, TweenInfo.new(0.6), {Size = UDim2.new(1.9, 0, 5, 0)})
 tween5:Play()
 tween6:Play()
-task.wait(0.2)
+task.wait(1)
 
 jumpscare.Sound:Stop()
 jumpscare.Visible = false
