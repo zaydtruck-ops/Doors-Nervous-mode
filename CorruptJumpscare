@@ -1,4 +1,4 @@
-local jumpscare = game:GetObjects("rbxassetid://137153023291189")[1]
+local jumpscare = game:GetObjects("rbxassetid://110003150631170")[1]
 local player = game.Players.LocalPlayer
 
 jumpscare.Parent = player.PlayerGui.MainUI
@@ -16,17 +16,42 @@ task.spawn(function()
 	end
 end)
 
+task.spawn(function()
+	while true do
+    task.wait(0.02)
+    jumpscare.StormImage.Rotation = math.random(-15, 15)
+    task.wait(0.05)
+    jumpscare.StormImage.Rotation = math.random(-15, 15)
+    task.wait(0.01)
+    jumpscare.StormImage.Rotation = math.random(-15, 15)
+    task.wait(0.1)
+    jumpscare.StormImage.Rotation = math.random(-15, 15)
+	end
+end)
+
 jumpscare.Visible = true
 jumpscare.StormImage.Size = UDim2.new(0.238, 0, 0.709, 0)
 jumpscare.StormImage.Position = UDim2.new(0.38, 0, 0.144, 0)
-local tween = TweenService:Create(jumpscare.StormImage, TweenInfo.new(1), {Position = UDim2.new(-0.451, 0, -2, 0)})
-local tween2 = TweenService:Create(jumpscare.StormImage, TweenInfo.new(1), {Size = UDim2.new(1.9, 0, 5, 0)})
+local tween = TweenService:Create(jumpscare.StormImage, TweenInfo.new(0.5), {Position = UDim2.new(-0.451, 0, -2, 0)})
+local tween2 = TweenService:Create(jumpscare.StormImage, TweenInfo.new(0.5), {Size = UDim2.new(1.9, 0, 5, 0)})
 task.wait()
 jumpscare.Sound:Play()
 task.wait(0.05)
 tween2:Play()
 tween:Play()
-task.wait(1.5)
+task.wait(0.5)
+local tween3 = TweenService:Create(jumpscare.StormImage, TweenInfo.new(0.1), {Position = UDim2.new(0.38, 0, 0.144, 0)})
+local tween4 = TweenService:Create(jumpscare.StormImage, TweenInfo.new(0.1), {Size = UDim2.new(0.238, 0, 0.709, 0)})
+tween3:Play()
+tween4:Play()
+task.wait(0.1)
+local tween5 = TweenService:Create(jumpscare.StormImage, TweenInfo.new(0.6), {Position = UDim2.new(-0.451, 0, -2, 0)})
+local tween6 = TweenService:Create(jumpscare.StormImage, TweenInfo.new(0.6), {Size = UDim2.new(1.9, 0, 5, 0)})
+tween5:Play()
+tween6:Play()
+task.wait(0.2)
+
+jumpscare.Sound:Stop()
 jumpscare.Visible = false
 jumpscare.StormImage.Size = UDim2.new(0.238, 0, 0.709, 0)
 jumpscare.StormImage.Position = UDim2.new(0.38, 0, 0.144, 0)
