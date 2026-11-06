@@ -235,7 +235,7 @@ MyEntity:SetCallback("OnDespawned", function()
         Title = "Corrupt nature",
         Desc = "That guy's really crooked...",
         Reason = "Survive Corrupt.",
-        Image = "rbxassetid://116564118275282"
+        Image = "rbxassetid://91271045685023"
     }, {
         CheckOwned = false,
         Remember = false
