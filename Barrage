@@ -209,7 +209,7 @@ MyEntity:SetCallback("OnDespawned", function()
         Title = "A Barrage of attacks",
         Desc = "Me and the boys are coming through !",
         Reason = "Survive Barrage and his clones.",
-        Image = "rbxassetid://119829392447424"
+        Image = "rbxassetid://104016507624765"
     }, {
         CheckOwned = false,
         Remember = true
