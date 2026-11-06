@@ -1,0 +1,101 @@
+local CustomAchievements = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/DOORS-Custom-Achievements/main/init.luau"))()
+
+local TweenService = game:GetService("TweenService")
+local player = game.Players.LocalPlayer
+local camera = workspace.CurrentCamera
+
+local success, loadedObjects = pcall(function()
+	return game:GetObjects("rbxassetid://82141783617866")
+end)
+
+if not success or not loadedObjects or #loadedObjects == 0 then
+	return
+end
+
+local model = loadedObjects[1]
+model.Parent = workspace
+
+local mainPart = model.PrimaryPart or model:FindFirstChildWhichIsA("BasePart")
+model.PrimaryPart = mainPart
+mainPart.CanCollide = false
+
+for _, part in ipairs(model:GetDescendants()) do
+	if part:IsA("BasePart") then
+		part.Anchored = true
+	end
+end
+
+local char = player.Character or player.CharacterAdded:Wait()
+local hrp = char:WaitForChild("HumanoidRootPart")
+
+local spawnPos = hrp.CFrame * CFrame.new(0, 0, -12)
+model:SetPrimaryPartCFrame(CFrame.new(spawnPos.Position, hrp.Position))
+
+local light = model:FindFirstChild("Light", true)
+if light then
+	light.Range = 0
+	TweenService:Create(light, TweenInfo.new(1), {Range = 21}):Play()
+end
+
+local function makeEntityFall()
+	if mainPart then
+		local targetCFrame = mainPart.Position - Vector3.new(0, 70, 0)
+		TweenService:Create(mainPart, TweenInfo.new(10, Enum.EasingStyle.Back), {Position = targetCFrame}):Play()
+        task.wait(1)
+        CustomAchievements:Grant({
+            Identifier = "Teazer",
+            Title = "Teasing encounter",
+            Desc = "Stop teasing me.",
+            Reason = "Survive Teazer.",
+            Image = "rbxassetid://129967461483577"
+        }, {
+            CheckOwned = false,
+            Remember = false
+        })
+	end
+end
+
+task.spawn(function()
+	local DURATION = 3
+	local startTime = os.clock()
+	local lookedAway = false
+
+	while (os.clock() - startTime) < DURATION do
+		task.wait(0.1)
+
+		local _, onScreen = camera:WorldToViewportPoint(mainPart.Position)
+
+		if not onScreen then
+			lookedAway = true
+			break
+		end
+	end
+
+	if lookedAway then
+		makeEntityFall()
+		task.wait(1)
+		model:Destroy()
+	else
+		local hum = char:FindFirstChild("Humanoid")
+		
+		local attackTween = TweenService:Create(mainPart, TweenInfo.new(0.5), {CFrame = hrp.CFrame})
+        mainPart:FindFirstChild("HORROR SCREAM 15"):Play()
+		attackTween:Play()
+		attackTween.Completed:Wait()
+
+		if hum then
+			hum:TakeDamage(30)
+            if hum.Health <= 0 then
+                local GameStats = game.ReplicatedStorage:WaitForChild("GameStats") :: Folder
+                local LocalPlayer = game.Players.LocalPlayer
+
+                local cause = "Teazer"
+                GameStats["Player_".. LocalPlayer.Name].Total.DeathCause.Value = cause
+            end
+		end
+
+		makeEntityFall()
+		task.wait(1)
+		model:Destroy()
+	end
+end)
