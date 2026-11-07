@@ -160,7 +160,7 @@ local MyEntity = Spawner:Create({
         Enabled = true,
 		IgnoreHiding = false,
         Range = 40,
-        Amount = 0
+        Amount = 160
     },
     Rebounding = {
         Enabled = false,
