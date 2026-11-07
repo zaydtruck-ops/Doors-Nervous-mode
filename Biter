@@ -274,7 +274,6 @@ end)
 
 MyEntity:SetCallback("OnDamagePlayer", function(newHealth: number)
 	if newHealth <= 0 then
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/zaydtruck-ops/Doors-Nervous-mode/refs/heads/main/CorruptJumpscare"))()
 		print("Entity has killed the player")
 	else
 		print("Entity has damaged the player")
