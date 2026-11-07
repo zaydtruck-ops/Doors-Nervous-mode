@@ -1,0 +1,186 @@
+local CustomAchievements = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/DOORS-Custom-Achievements/main/init.luau"))()
+
+local function sounds()
+    task.spawn(function()
+        for i=1, 7 do
+            task.wait(math.random(5, 30)/100)
+            task.spawn(function()
+                local sound = Instance.new("Sound")
+                    
+                sound.Volume = 20
+                sound.SoundId = "rbxassetid://166047422"
+                sound.Parent = game.SoundService
+                sound.PlaybackSpeed = 0.8
+                sound:Play()
+
+                task.wait(1.2)
+                sound:Destroy()
+            end)
+        end
+    end)
+end
+
+local Spawner = loadstring(game:HttpGet("https://raw.githubusercontent.com/zaydtruck-ops/Vynixu-entity-spawner-modified-with-death-message-delay/refs/heads/main/Spawner"))()
+
+local MyEntity = Spawner:Create({
+    Entity = {
+        Name = "Tackle",
+        Asset = "https://github.com/zaydtruck-ops/TackleDoorsModel/raw/refs/heads/main/Tackle.rbxm", --ENTITY MODEL
+        HeightOffset = 2.5
+    },
+    Movement = {
+        Speed = 200,
+        Delay = 5,
+        Reversed = false
+    },
+    Damage = {
+        Enabled = false,
+		IgnoreHiding = false,
+        Range = 40,
+        Amount = 200
+    },
+    Rebounding = {
+        Enabled = false,
+        Type = "Ambush", -- "Blitz"
+        Min = 1,
+        Max = 1,
+        Delay = 6
+    },
+    Lights = {
+        Flicker = {
+            Enabled = true,
+            Duration = 2
+        },
+        Shatter = false,
+        Repair = false
+    },
+    Earthquake = {
+        Enabled = false
+    },
+    CameraShake = {
+        Enabled = true,
+        Values = {10, 50, 0.5, 2}, -- Magnitude, Roughness, FadeIn, FadeOut
+        Range = 150
+    },
+    Crucifixion = {
+        Type = "Guiding", -- "Guiding"
+        Enabled = true,
+        Range = 40,
+        Resist = true,
+        Break = true
+    },
+    Death = {
+        Type = "Guiding", -- "Curious"
+        Hints = {"You died to Tackle.", "It signals it's arrival with a semi-long flicker, and a different sound.", "When he appears, don't hide. He breaks closets witch will then fall onto you, witch will kill you.", "Hide in an exposed spot !", "Better luck next time !", "(Credits to Crafter2393 on doors ideas wiki for this entity)"},
+        Cause = "Tackle",
+        MessageDelay = 0
+    }
+})
+
+MyEntity:SetCallback("OnSpawned", function()
+    sounds()
+    print("Entity has spawned")
+end)
+
+MyEntity:SetCallback("OnStartMoving", function()
+    print("Entity has started moving")
+end)
+
+MyEntity:SetCallback("OnEnterRoom", function(room: Model, firstTime: boolean)
+    local number = tonumber(room.Name)
+    if firstTime == true and number <= game.ReplicatedStorage.GameData.DoorsOpened.Value then
+        print("Entity has entered room: ".. room.Name.. " for the first time")
+        for i, closet in ipairs(room.Assets:GetChildren()) do
+            task.spawn(function()
+                if closet.Name == "Wardrobe" then
+                    for i, closetPart in ipairs(closet:GetDescendants()) do
+                        if closetPart:IsA("MeshPart") then
+                            closetPart.Anchored = false
+                            closetPart.Position = closetPart.Position + Vector3.new(math.random(-2, 2), math.random(-2, 2), math.random(-2, 2))
+                        elseif closetPart:IsA("Motor6D") or closetPart:IsA("ManualWeld") or closetPart:IsA("ProximityPrompt") then
+                            closetPart:Destroy()
+                        end
+                    end
+                    if closet.HiddenPlayer.Value.Humanoid then
+                        local GameStats = game.ReplicatedStorage:WaitForChild("GameStats") :: Folder
+                        closet.HiddenPlayer.Value.Humanoid.Health = 0
+                        local LocalPlayer = game.Players.LocalPlayer
+
+                        local cause = "Tackle [Don't hide !]"
+                        GameStats["Player_".. LocalPlayer.Name].Total.DeathCause.Value = cause
+                    end
+                end
+            end)
+        end
+    else
+        print("Entity has entered room: ".. room.Name.. " again")
+        for i, closet in ipairs(room.Assets:GetChildren()) do
+            task.spawn(function()
+                if closet.Name == "Wardrobe" then
+                    for i, closetPart in ipairs(closet:GetDescendants()) do
+                        if closetPart:IsA("MeshPart") then
+                            closetPart.Massless = true
+                            closetPart.Anchored = false
+                            closetPart.Position = closetPart.Position + Vector3.new(math.random(-2, 2), math.random(-2, 2), math.random(-2, 2))
+                        elseif closetPart:IsA("Motor6D") or closetPart:IsA("ManualWeld") then
+                            closetPart:Destroy()
+                        end
+                    end
+                    if closet.HiddenPlayer.Value.Humanoid then
+                        local GameStats = game.ReplicatedStorage:WaitForChild("GameStats") :: Folder
+                        closet.HiddenPlayer.Value.Humanoid.Health = 0
+                        local LocalPlayer = game.Players.LocalPlayer
+
+                        local cause = "Tackle"
+                        GameStats["Player_".. LocalPlayer.Name].Total.DeathCause.Value = cause
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+MyEntity:SetCallback("OnLookAt", function(lineOfSight: boolean)
+	if lineOfSight == true then
+		print("Player is looking at entity")
+	else
+		print("Player view is obstructed by something")
+	end
+end)
+
+MyEntity:SetCallback("OnRebounding", function(startOfRebound: boolean)
+    if startOfRebound == true then
+      print("Entity has started rebounding")
+	else
+      print("Entity has finished rebounding")
+	end
+end)
+
+MyEntity:SetCallback("OnDespawning", function()
+    print("Entity is despawning")
+end)
+
+MyEntity:SetCallback("OnDespawned", function()
+    print("Entity has despawned")
+    CustomAchievements:Grant({
+        Identifier = "Tackle",
+        Title = "Tackled",
+        Desc = "To the ground !",
+        Reason = "Survive Tackle.",
+        Image = "rbxassetid://106964569985254"
+    }, {
+        CheckOwned = false,
+        Remember = false
+    })
+end)
+
+MyEntity:SetCallback("OnDamagePlayer", function(newHealth: number)
+	if newHealth <= 0 then
+		print("Entity has killed the player")
+	else
+		print("Entity has damaged the player")
+	end
+end)
+
+--SPAWN ENTITY
+MyEntity:Run(true)
