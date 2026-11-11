@@ -52,7 +52,7 @@ local MyEntity = Spawner:Create({
     Death = {
         Type = "Guiding", -- "Curious"
         Hints = {"You died to A-35.", "It's extremely fast.", "When you hear it's whispers in the distance, prepare to hide !", "It rebounds once or twice.", "Good luck !", "(credits to Interminable rooms for this entity.)"},
-        Cause = "Appal",
+        Cause = "A-35",
         MessageDelay = 0
     }
 })
@@ -60,7 +60,7 @@ local MyEntity = Spawner:Create({
 MyEntity:SetCallback("OnSpawned", function()
     print("Entity has spawned")
 	local model = MyEntity.Model
-    model.RushNew:FindFirstChild("Afterworld ambience").RollOffMaxDistance = 500
+    model.RushNew:FindFirstChild("Afterworld ambience").RollOffMaxDistance = 600
     game.SoundService.AmbientReverb = Enum.ReverbType.Hangar
 end)
 
