@@ -1,0 +1,104 @@
+local CustomAchievements = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/DOORS-Custom-Achievements/main/init.luau"))()
+
+local Spawner = loadstring(game:HttpGet("https://raw.githubusercontent.com/zaydtruck-ops/Vynixu-entity-spawner-modified-with-death-message-delay/refs/heads/main/Spawner"))()
+
+local MyEntity = Spawner:Create({
+    Entity = {
+        Name = "A-35",
+        Asset = "rbxassetid://111882047868660", --ENTITY MODEL
+        HeightOffset = 1
+    },
+    Movement = {
+        Speed = 600,
+        Delay = 4,
+        Reversed = false
+    },
+    Damage = {
+        Enabled = true,
+		IgnoreHiding = false,
+        Range = 200,
+        Amount = 1000
+    },
+    Rebounding = {
+        Enabled = true,
+        Type = "Ambush", -- "Blitz"
+        Min = 1,
+        Max = 2,
+        Delay = 0
+    },
+    Lights = {
+        Flicker = {
+            Enabled = false,
+            Duration = 4
+        },
+        Shatter = false,
+        Repair = false
+    },
+    Earthquake = {
+        Enabled = false
+    },
+    CameraShake = {
+        Enabled = true,
+        Values = {20, 40, 0.5, 2}, -- Magnitude, Roughness, FadeIn, FadeOut
+        Range = 150
+    },
+    Crucifixion = {
+        Type = "Guiding", -- "Guiding"
+        Enabled = true,
+        Range = 40,
+        Resist = false,
+        Break = false
+    },
+    Death = {
+        Type = "Guiding", -- "Curious"
+        Hints = {"You died to A-35.", "It's extremely fast.", "When you hear it's whispers in the distance, prepare to hide !", "It rebounds once or twice.", "Good luck !", "(credits to Interminable rooms for this entity.)"},
+        Cause = "Appal",
+        MessageDelay = 0
+    }
+})
+
+MyEntity:SetCallback("OnSpawned", function()
+    print("Entity has spawned")
+	local model = MyEntity.Model
+    model.RushNew:FindFirstChild("Afterworld ambience").RollOffMaxDistance = 500
+    game.SoundService.AmbientReverb = Enum.ReverbType.Hangar
+end)
+
+MyEntity:SetCallback("OnStartMoving", function()
+    print("Entity has started moving")
+end)
+
+MyEntity:SetCallback("OnEnterRoom", function(room: Model, firstTime: boolean)
+
+end)
+
+MyEntity:SetCallback("OnLookAt", function(lineOfSight: boolean)
+
+end)
+
+MyEntity:SetCallback("OnRebounding", function(startOfRebound: boolean)
+    if startOfRebound == true then
+      print("Entity has started rebounding")
+	else
+      print("Entity has finished rebounding")
+	end
+end)
+
+MyEntity:SetCallback("OnDespawning", function()
+    print("Entity is despawning")
+end)
+
+MyEntity:SetCallback("OnDespawned", function()
+    print("Entity has despawned")
+end)
+
+MyEntity:SetCallback("OnDamagePlayer", function(newHealth: number)
+	if newHealth <= 0 then
+		print("Entity has killed the player")
+	else
+		print("Entity has damaged the player")
+	end
+end)
+
+--SPAWN ENTITY
+MyEntity:Run(true)
