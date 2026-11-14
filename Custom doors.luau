@@ -1,0 +1,16 @@
+local door = workspace.CurrentRooms:FindFirstChild("0").Door
+
+door.Door.MaterialVariant = "Plywood"
+door.Door.CrossBoards.MaterialVariant = "Plywood"
+door.Door.Sign.Color = Color3.fromRGB(129, 111, 100)
+door.Door.Color = Color3.fromRGB(90, 77, 68)
+door.Door.CrossBoards.Color = Color3.fromRGB(90, 77, 68)
+
+game.ReplicatedStorage.GameData.DoorsOpened.Changed:Connect(function()
+    door = workspace.CurrentRooms:FindFirstChild(tostring(game.ReplicatedStorage.GameData.DoorsOpened.Value)).Door
+    door.Door.MaterialVariant = "Plywood"
+    door.Door.Sign.Color = Color3.fromRGB(129, 111, 100)
+    door.Door.CrossBoards.MaterialVariant = "Plywood"
+    door.Door.Color = Color3.fromRGB(90, 77, 68)
+    door.Door.CrossBoards.Color = Color3.fromRGB(90, 77, 68)
+end)
