@@ -194,7 +194,7 @@ local MyEntity = Spawner:Create({
     },
     Death = {
         Type = "Guiding", -- "Curious"
-        Hints = {"You died to Corrupt.", "It will rebound two or four times.", "And it will shake the screen and turn the lights blue to signal it's arrival.", "Use what you've learned from Ambush !"},
+        Hints = {"You died to Biter.", "It will stall at each room it enters.", "When it's really close to you, hide !", "Good luck !"},
         Cause = "Biter",
         MessageDelay = 0.6
     },
