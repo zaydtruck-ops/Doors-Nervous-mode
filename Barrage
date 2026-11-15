@@ -113,7 +113,7 @@ local Spawner = loadstring(game:HttpGet("https://raw.githubusercontent.com/zaydt
 local MyEntity = Spawner:Create({
     Entity = {
         Name = "Barrage",
-        Asset = "https://github.com/zaydtruck-ops/Barrage-model-Doors-by-Scpsarecool/raw/refs/heads/main/Barrage.rbxm", --ENTITY MODEL
+        Asset = "rbxassetid://92904534178169", --ENTITY MODEL
         HeightOffset = 2
     },
     Movement = {
