@@ -30,7 +30,7 @@ local MyEntity = Spawner:Create({
     },
     Movement = {
         Speed = 200,
-        Delay = 5,
+        Delay = 0,
         Reversed = false
     },
     Damage = {
